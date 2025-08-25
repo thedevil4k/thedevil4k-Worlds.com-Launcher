@@ -1,3 +1,6 @@
+![Python](https://img.shields.io/badge/language-Java-yellow.svg)
+![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)
+
 thedevil4k Worlds.com Launcher
 Introduction
 thedevil4k Worlds.com Launcher is an advanced configuration utility for the Worlds.com game client. This program provides a graphical user interface (GUI) to easily and centrally manage multiple game settings that would otherwise require manual editing of .ini files.
