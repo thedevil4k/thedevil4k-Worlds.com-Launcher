@@ -1,4 +1,4 @@
-![Python](https://img.shields.io/badge/language-Java-yellow.svg)
+![Python](https://img.shields.io/badge/language-Python-yellow.svg)
 ![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)
 
 thedevil4k Worlds.com Launcher
