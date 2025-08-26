@@ -38,6 +38,7 @@ A dedicated column with toggles to quickly enable or disable various `worlds.ini
 
 ## Screenshots
 <img width="1449" height="684" alt="image" src="https://github.com/user-attachments/assets/cc8c9171-e530-4b12-afbc-6e3faa23c143" />
+
 ## Technologies Used
 
 * **Python**: Core programming language.
