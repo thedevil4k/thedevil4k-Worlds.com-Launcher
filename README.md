@@ -37,9 +37,7 @@ A dedicated column with toggles to quickly enable or disable various `worlds.ini
     * Displays the status of the configuration files (`worlds.ini`, `override.ini`) in the interface.
 
 ## Screenshots
-
-![Launcher Screenshot](https://i.imgur.com/your-screenshot.png)
-
+<img width="1449" height="684" alt="image" src="https://github.com/user-attachments/assets/cc8c9171-e530-4b12-afbc-6e3faa23c143" />
 ## Technologies Used
 
 * **Python**: Core programming language.
