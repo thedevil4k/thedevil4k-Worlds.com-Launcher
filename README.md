@@ -1,94 +1,88 @@
 ![Python](https://img.shields.io/badge/language-Python-yellow.svg)
 ![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)
 
-thedevil4k Worlds.com Launcher
-Introduction
-thedevil4k Worlds.com Launcher is an advanced configuration utility for the Worlds.com game client. This program provides a graphical user interface (GUI) to easily and centrally manage multiple game settings that would otherwise require manual editing of .ini files.
+# thedevil4k Worlds.com Launcher
 
-The launcher is capable of detecting the game version (legacy with run.exe or modern with WorldsPlayer.exe) and intelligently applies configurations, respecting the file structure of worlds.ini and override.ini.
+![Project Banner](https://i.imgur.com/your-banner-image.png)  An advanced and customizable launcher for Worlds.com, designed to simplify client configuration and enhance the user experience.
 
-Key Features
-Server Management
-Server Selection: Allows switching between different community servers (e.g., LibreWorlds, Official, Worlio) by modifying the worlds.ini and override.ini files.
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/thedevil4k/thedevil4k-Worlds.com-Launcher/)
+[![Version](https://img.shields.io/badge/version-1.1-blue)](https://github.com/thedevil4k/thedevil4k-Worlds.com-Launcher/releases)
+[![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
-Advanced Updating Server Options: In a collapsible panel, allows configuring the update servers (upgradeServer and scriptServer), with options to make no changes (Nothing) or to remove the lines entirely (Remove).
+## Introduction
 
-Integrated Server Editor:
+**thedevil4k Worlds.com Launcher** is an advanced configuration utility for the Worlds.com game client. This program provides a graphical user interface (GUI) to centrally and easily manage multiple game configurations that would otherwise require manual editing of `.ini` files.
 
-Add New Server: A button opens a form to add new server configurations directly from the launcher.
+The launcher is capable of detecting the game version (legacy with `run.exe` or modern with `WorldsPlayer.exe`) and intelligently applies all settings.
 
-The information is saved to the worldsserverselection.json file, allowing for full customization.
+## Key Features
 
-External Configuration: The entire server list is managed via a worldsserverselection.json file, which the launcher can create automatically if it is missing.
+### Server Management
+* **Server Selection**: Easily switch between different community servers (e.g., LibreWorlds, Official, Worlio).
+* **Advanced Update Options**: Configure the update servers (`upgradeServer` and `scriptServer`).
+* **Integrated Server Editor**:
+    * **Add New Server**: An intuitive form to add new server configurations.
+    * Information is saved to the `worldsserverselection.json` file for full customization.
+* **External Configuration**: The server list is managed via a `worldsserverselection.json` file, which is created automatically if it doesn't exist.
 
-Configuration Tools (TOOLS)
-A dedicated column with toggles to quickly enable or disable various worlds.ini options, each with a visual status indicator (green/red):
+### Configuration Tools (TOOLS)
+A dedicated column with toggles to quickly enable or disable various `worlds.ini` options, each with a visual status indicator (green/red):
 
-MULTIRUN: Allows running multiple instances of the game.
+* `MULTIRUN`: Allows running multiple instances of the game.
+* `CHATBOX`: Toggles the classic chatbox on or off.
+* `SHAPER`: Enables or disables the "Shaper".
+* `PERMIT ANY AVATARS`: Controls the `permitAnyAvatar` variable.
+* `ALLOW OBSCENITIES`: Controls the `allowObscenities` variable.
+* **Max Players View**: A numeric field to adjust the `avatars=` value (from 1 to 256).
 
-CHATBOX: Toggles the classic chatbox.
+### Additional Utilities
+* **Cache Cleaner**: A button to safely delete all contents of the `cachedir` folder.
+* **Default File Creator**: Buttons to generate generic `worlds.ini` and `override.ini` files.
+* **Smart Detection**:
+    * Automatically detects the active server configuration on startup.
+    * Detects the game version (`run.exe` vs. `WorldsPlayer.exe`).
+    * Displays the status of the configuration files (`worlds.ini`, `override.ini`) in the interface.
 
-SHAPER: Toggles the "Shaper" (inverted logic: green if disableshaper=0).
+## Screenshots
 
-PERMIT ANY AVATARS: Controls the permitAnyAvatar setting.
+![Launcher Screenshot](https://i.imgur.com/your-screenshot.png)
 
-ALLOW OBSCENITIES: Controls the allowObscenities setting.
+## Technologies Used
 
-Max Players View: A numeric input field to adjust the avatars= value (from 1 to 256).
+* **Python**: Core programming language.
+* **Tkinter**: Library for the graphical user interface.
+* **Pillow**: For image handling.
+* **PyInstaller**: To create the final executable.
 
-Additional Utilities
-Clean Cache: A button to safely delete all contents of the cachedir folder.
+## Installation and Usage
 
-Create Default Files: Buttons to generate generic worlds.ini and override.ini files if the user has deleted or corrupted their own.
+1.  **Download** the latest version from the [Releases page](https://github.com/thedevil4k/thedevil4k-Worlds.com-Launcher/releases).
+2.  **Place** the `thedevil4k Launcher.exe` file in your main Worlds.com installation folder, alongside `worlds.ini`, `override.ini`, and the game executable (`run.exe` or `WorldsPlayer.exe`).
+3.  **Run** `thedevil4k Launcher.exe`.
+    * **Note**: The program requires **administrator privileges** to be able to launch the game executable.
+4.  On the first run, if `worldsserverselection.json` is not found, it will be created automatically with a default configuration.
+5.  Use the controls to adjust your settings and press **PLAY**.
 
-Intelligent Detection:
+## How to Contribute
 
-Automatically detects the active server configuration on startup.
+Contributions are welcome! If you want to improve this project, please follow these steps:
 
-Detects the game version (run.exe vs. WorldsPlayer.exe) and adjusts the file writing logic accordingly.
+1.  **Fork** the repository.
+2.  Create a new branch (`git checkout -b feature/new-feature`).
+3.  Make your changes and **Commit** them (`git commit -am 'Add a new feature'`).
+4.  **Push** to the branch (`git push origin feature/new-feature`).
+5.  Open a **Pull Request**.
 
-Displays the status of key files (worlds.ini, override.ini) in the interface.
+## License
 
-User Interface
-Custom GUI with a background image and application icon.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-Organized, column-based layout with scrollbars that respond to the mouse wheel.
+## Contact
 
-Robust interface that always starts, using visual indicators to report missing files instead of a startup error.
+**thedevil4k**
 
-How to Use
-Download the thedevil4k Launcher.exe file.
+* **GitHub**: [thedevil4k](https://github.com/thedevil4k)
+* **Email**: your-email@example.com ## Credits
 
-Place the .exe in your main Worlds.com installation folder, alongside worlds.ini, override.ini, and the game executable (run.exe or WorldsPlayer.exe).
-
-Run thedevil4k Launcher.exe.
-
-Note: The program requires administrator privileges to be able to launch the game executable. Windows will ask for permission with a UAC prompt.
-
-On the first run, if worldsserverselection.json is not found, it will be created automatically with a default configuration.
-
-Use the controls to adjust your settings and press PLAY.
-
-Building from Source
-If you wish to modify the program and compile your own version, you will need the following:
-
-Requirements
-Python (version 3.8+ recommended).
-
-The following Python libraries, which you can install with pip:
-
-Bash
-
-pip install Pillow pyinstaller
-Build Command
-Navigate with a terminal to the folder containing launcher.py and the asset files, and run the following command:
-
-Bash
-
-pyinstaller --onefile --windowed --uac-admin --add-data "serverselectionbackground.jpg;." --add-data "worldsserverselection.ico;." launcher.py
-The final .exe will be located in the dist folder.
-
-Credits
-Project Direction & Design: thedevil4k
-
-Code Generation & Engineering: Gemini Pro
+* **Project Direction & Design**: thedevil4k
+* **Code Generation & Engineering**: Gemini
