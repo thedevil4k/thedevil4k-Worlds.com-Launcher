@@ -67,7 +67,7 @@ Contributions are welcome! If you want to improve this project, please follow th
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPLv3 License.
 
 ## Contact
 
