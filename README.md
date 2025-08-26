@@ -2,9 +2,6 @@
 ![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)
 
 # thedevil4k Worlds.com Launcher
-
-![Project Banner](https://i.imgur.com/your-banner-image.png)  An advanced and customizable launcher for Worlds.com, designed to simplify client configuration and enhance the user experience.
-
 ## Introduction
 
 **thedevil4k Worlds.com Launcher** is an advanced configuration utility for the Worlds.com game client. This program provides a graphical user interface (GUI) to centrally and easily manage multiple game configurations that would otherwise require manual editing of `.ini` files.
