@@ -55,26 +55,22 @@ A dedicated column with toggles to quickly enable or disable various `worlds.ini
 4.  On the first run, if `worldsserverselection.json` is not found, it will be created automatically with a default configuration.
 5.  Use the controls to adjust your settings and press **PLAY**.
 
-## How to Contribute
+## 🚀 Compiling from Source with PyInstaller
 
-Contributions are welcome! If you want to improve this project, please follow these steps:
+If you want to compile the launcher from the source code yourself, you will need **PyInstaller**.
 
-1.  **Fork** the repository.
-2.  Create a new branch (`git checkout -b feature/new-feature`).
-3.  Make your changes and **Commit** them (`git commit -am 'Add a new feature'`).
-4.  **Push** to the branch (`git push origin feature/new-feature`).
-5.  Open a **Pull Request**.
+### Prerequisites
+
+Before compiling, make sure you have the necessary tools installed. You can install the required packages using pip:
+
+```bash
+pip install pyinstaller Pillow
+
+pyinstaller --onefile --windowed --uac-admin --icon="worldsserverselection.ico" --add-data="serverselectionbackground.jpg:." --add-data="worldsserverselection.ico:." --add-data="worldsserverselection.json:." launcher.py
 
 ## License
 
-This project is licensed under the GPLv3 License.
-
-## Contact
-
-**thedevil4k**
-
-* **GitHub**: [thedevil4k](https://github.com/thedevil4k)
-* **Email**: your-email@example.com ## Credits
+This project is licensed under the GPLv3 License. You can fork and improve that.
 
 * **Project Direction & Design**: thedevil4k
 * **Code Generation & Engineering**: Gemini
