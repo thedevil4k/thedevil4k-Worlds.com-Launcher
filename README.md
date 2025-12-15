@@ -37,7 +37,7 @@ A dedicated column with toggles to quickly enable or disable various `worlds.ini
     * Displays the status of the configuration files (`worlds.ini`, `override.ini`) in the interface.
 
 ## Screenshots
-<img width="1449" height="684" alt="image" src="https://github.com/user-attachments/assets/cc8c9171-e530-4b12-afbc-6e3faa23c143" />
+![thedevil4k Worlds.com Launcher Preview](screenshots/launcher_preview.png)
 
 ## Technologies Used
 
@@ -64,10 +64,41 @@ If you want to compile the launcher from the source code yourself, you will need
 Before compiling, make sure you have the necessary tools installed. You can install the required packages using pip:
 
 ```bash
-pip install pyinstaller Pillow
+pip install pyinstaller Pillow customtkinter
+```
 
+### Windows
+
+To compile on Windows, you can simply run the included `compile.bat` file. This script handles all the necessary PyInstaller arguments, including administrator privileges (`--uac-admin`) and resource bundling.
+
+1.  Open a terminal or command prompt in the project directory.
+2.  Run the script:
+    ```cmd
+    compile.bat
+    ```
+
+Alternatively, you can run the command manually:
+```cmd
 pyinstaller --noconfirm --onefile --windowed --uac-admin --icon="worldsserverselection.ico" --add-data="serverselectionbackground2.png;." --add-data="worldsserverselection.ico;." --add-data="worldsserverselection.json;." --add-data="themes;themes" --add-data="screenshots;screenshots" --add-data="files.txt;." --add-data="theme_icon.ico;." --collect-all customtkinter launcher.py
+```
 
+### Linux
+
+To compile on Linux, use the provided `compile.sh` script.
+
+1.  Ensure the script is executable:
+    ```bash
+    chmod +x compile.sh
+    ```
+2.  Run the script:
+    ```bash
+    ./compile.sh
+    ```
+
+Or run the command manually (note the usage of `:` separator for `--add-data` on Linux/Unix):
+```bash
+pyinstaller --noconfirm --onefile --windowed --icon="worldsserverselection.ico" --add-data="serverselectionbackground2.png:." --add-data="worldsserverselection.ico:." --add-data="worldsserverselection.json:." --add-data="themes:themes" --add-data="screenshots:screenshots" --add-data="files.txt:." --add-data="theme_icon.ico:." --collect-all customtkinter launcher.py
+```
 ## License
 
 This project is licensed under the GPLv3 License. You can fork and improve that.
