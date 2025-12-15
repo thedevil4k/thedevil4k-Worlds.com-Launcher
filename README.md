@@ -66,7 +66,7 @@ Before compiling, make sure you have the necessary tools installed. You can inst
 ```bash
 pip install pyinstaller Pillow
 
-pyinstaller --onefile --windowed --uac-admin --icon="worldsserverselection.ico" --add-data="serverselectionbackground.jpg:." --add-data="worldsserverselection.ico:." --add-data="worldsserverselection.json:." launcher.py
+pyinstaller --noconfirm --onefile --windowed --uac-admin --icon="worldsserverselection.ico" --add-data="serverselectionbackground2.png;." --add-data="worldsserverselection.ico;." --add-data="worldsserverselection.json;." --add-data="themes;themes" --add-data="screenshots;screenshots" --add-data="files.txt;." --add-data="theme_icon.ico;." --collect-all customtkinter launcher.py
 
 ## License
 

@@ -1,0 +1,36 @@
+{
+    "server_selection": {
+        "LibreWorlds": {
+            "address": "[test.libreworlds.org:32147]",
+            "world_server": "WorldServer=worldserver://test.libreworlds.org:32147"
+        },
+        "Official": {
+            "address": "[test.3dcd.com:6650]",
+            "world_server": "WorldServer=worldserver://http://us1.worlds.net/3DCDup"
+        },
+        "Worlio": {
+            "address": "[worlio.com:6650]",
+            "world_server": "WorldServer=worldserver://worlio.com:6650/"
+        }
+    },
+    "updating_server": {
+        "Nothing": {},
+        "Remove": {},
+        "LibreWorlds": {
+            "upgrade_server": "upgradeServer=http://upgrade.libreworlds.org/3DCDup",
+            "script_server": "scriptServer=http://script.libreworlds.org"
+        },
+        "Official": {
+            "upgrade_server": "upgradeServer=http://us1.worlds.net/3DCDup",
+            "script_server": null
+        },
+        "Worlio": {
+            "upgrade_server": "UpgradeServer=http://files.worlio.com/DCDup/",
+            "script_server": "ScriptServer=http://files.worlio.com/cgi-bin/"
+        },
+        "Jett": {
+            "upgrade_server": "upgradeServer=http://jett.dacii.net/3DCDup/",
+            "script_server": "ScriptServer=http://jett.dacii.net/cgi-bin/"
+        }
+    }
+}

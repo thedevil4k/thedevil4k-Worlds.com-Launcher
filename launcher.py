@@ -1,11 +1,17 @@
+import customtkinter as ctk
+from theme_selector_module import ThemeSelectorWindow
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import messagebox
 import os
 import sys
 import subprocess
 import json
 import shutil
 from PIL import Image, ImageTk
+
+# --- CustomTkinter Setup ---
+ctk.set_appearance_mode("Dark")
+ctk.set_default_color_theme("dark-blue")
 
 # --- Determine the base path for external files ---
 if getattr(sys, 'frozen', False):
@@ -28,7 +34,7 @@ OVERRIDE_FILE_NAME = 'override.ini'
 EXECUTABLE_NAME = 'run.exe'
 FALLBACK_EXECUTABLE_NAME = 'WorldsPlayer.exe'
 ICON_NAME = 'worldsserverselection.ico'
-BACKGROUND_IMAGE_NAME = 'serverselectionbackground.jpg'
+BACKGROUND_IMAGE_NAME = 'serverselectionbackground2.png'
 SERVER_CONFIG_FILE = 'worldsserverselection.json'
 
 # --- 2. LOGIC FUNCTIONS ---
@@ -354,61 +360,48 @@ def apply_changes_and_launch(server_option, updating_option, server_config_map, 
         messagebox.showerror("Unexpected Error", f"An unexpected error has occurred:\n{e}")
 
 # --- 3. PROGRAM START AND GUI ---
-class ToolButton:
-    def __init__(self, parent, text, setting_name, setting_name_in_file, file_exists_status, default_active=False, font_size=11):
+class ToolButton(ctk.CTkFrame):
+    def __init__(self, parent, text, setting_name, setting_name_in_file, file_exists_status, default_active=False, font_size=12):
+        super().__init__(parent, fg_color="transparent")
         self.setting_name = setting_name
         self.setting_name_in_file = setting_name_in_file
         self.file_exists = file_exists_status
         self.default_active = default_active
-        frame = tk.Frame(parent, bg='black')
-        frame.pack(pady=5, fill='x', padx=10)
-        self.canvas = tk.Canvas(frame, width=20, height=20, bg='black', bd=0, highlightthickness=0)
-        self.canvas.pack(side='left', padx=(0, 5))
-        self.indicator = self.canvas.create_oval(5, 5, 15, 15, fill='red')
-        button = tk.Button(frame, text=text, font=('Arial', font_size, 'bold'), bg='#333333', fg='white',
-                           activebackground='#444444', activeforeground='white', bd=0, command=self.on_click)
-        button.pack(side='left', expand=True, fill='x', ipady=8)
+
+        # Status Indicator (Red/Green Dot)
+        self.indicator_frame = ctk.CTkFrame(self, width=15, height=15, corner_radius=15)
+        self.indicator_frame.pack(side='left', padx=(5, 10))
+        
+        self.btn = ctk.CTkButton(self, text=text, font=('Roboto Medium', font_size),
+                                 fg_color='#333333', hover_color='#444444',
+                                 command=self.on_click)
+        self.btn.pack(side='left', expand=True, fill='x', ipady=6)
+        
         self.update_indicator()
+
     def update_indicator(self):
         if not self.file_exists:
             color = 'red'
         else:
             color = 'green' if check_setting_status(self.setting_name, self.default_active) else 'red'
-        self.canvas.itemconfig(self.indicator, fill=color)
+        self.indicator_frame.configure(fg_color=color)
+
     def on_click(self):
         if not self.file_exists:
             return
         toggle_setting_action(self.setting_name, self.setting_name_in_file, self.default_active)
         self.update_indicator()
 
-class ScrollableFrame(tk.Frame):
-    """A frame with a vertical scrollbar that responds to the mouse wheel."""
-    def __init__(self, container, *args, **kwargs):
-        super().__init__(container, *args, **kwargs)
-        self.canvas = tk.Canvas(self, bg='black', highlightthickness=0, borderwidth=0)
-        self.scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
-        self.scrollable_frame = tk.Frame(self.canvas, bg='black')
-        self.scrollable_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
-        self.scrollable_frame.bind_all("<MouseWheel>", self._on_mousewheel, add="+")
-        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel, add="+")
-        self.canvas.pack(side="left", fill="both", expand=True)
-        self.scrollbar.pack(side="right", fill="y")
-    def _on_mousewheel(self, event):
-        widget_under_cursor = self.winfo_containing(event.x_root, event.y_root)
-        if widget_under_cursor and (widget_under_cursor == self.canvas or self.scrollable_frame in widget_under_cursor.winfo_parents() or widget_under_cursor == self.scrollable_frame):
-             self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-
 if __name__ == "__main__":
     worlds_ini_exists = os.path.isfile(os.path.join(application_path, INI_FILE_NAME))
     override_ini_exists = os.path.isfile(os.path.join(application_path, OVERRIDE_FILE_NAME))
     full_config = load_full_config()
+    
     if full_config:
         SERVER_SELECTION_CONFIG = full_config.get("server_selection", {})
         UPDATING_SERVER_CONFIG = full_config.get("updating_server", {})
 
-        window = tk.Tk()
+        window = ctk.CTk()
         window.title("thedevil4k Launcher")
         window.geometry("1455x664")
         window.resizable(False, False)
@@ -418,67 +411,117 @@ if __name__ == "__main__":
         try:
             icon_path = resource_path(ICON_NAME)
             window.iconbitmap(icon_path)
+            
+            # Application Background Image
             background_path = resource_path(BACKGROUND_IMAGE_NAME)
             pil_image = Image.open(background_path)
             pil_image = pil_image.resize((1455, 664), Image.Resampling.LANCZOS)
             background_image_obj = ImageTk.PhotoImage(pil_image)
-            background_label = tk.Label(window, image=background_image_obj)
+            
+            background_label = tk.Label(window, image=background_image_obj, bg="black")
             background_label.place(x=0, y=0, relwidth=1, relheight=1)
+            # Ensure background stays behind everything
+            background_label.lower()
         except Exception as e:
             print(f"Error loading assets: {e}")
+            background_label = None
 
-        main_container = tk.Frame(window, bg='black')
-        main_container.place(x=600, y=150, width=840, height=450)
+        # Main Central Container
+        main_container = ctk.CTkFrame(window, width=900, height=520, corner_radius=10, fg_color="#1a1a1a")
+        # Placing it manually as per original logic to standardise layout
+        main_container.place(x=530, y=100)
+        main_container.grid_propagate(False)
 
         main_container.grid_columnconfigure(0, weight=2)
         main_container.grid_columnconfigure(1, weight=4) # Give more weight to the right column
         main_container.grid_rowconfigure(0, weight=1)
 
-        tools_container = ScrollableFrame(main_container, bg='black')
-        tools_container.grid(row=0, column=0, sticky='nsew', padx=10, pady=10)
-        frame_tools = tools_container.scrollable_frame
-
-        label_tools_title = tk.Label(frame_tools, text="TOOLS", font=('Arial', 18, 'bold'), bg='black', fg='white')
-        label_tools_title.pack(pady=5)
+        # Tools Section (Left)
+        frame_tools = ctk.CTkScrollableFrame(main_container, label_text="TOOLS", label_font=('Roboto Medium', 18))
+        frame_tools.grid(row=0, column=0, sticky='nsew', padx=10, pady=10)
 
         def refresh_all_indicators():
             global worlds_ini_exists, override_ini_exists
             worlds_ini_exists = os.path.isfile(os.path.join(application_path, INI_FILE_NAME))
             override_ini_exists = os.path.isfile(os.path.join(application_path, OVERRIDE_FILE_NAME))
-            canvas_worlds.itemconfig(worlds_dot, fill='green' if worlds_ini_exists else 'red')
-            canvas_override.itemconfig(override_dot, fill='green' if override_ini_exists else 'red')
+            
+            # File Status Colors
+            col_worlds = 'green' if worlds_ini_exists else 'red'
+            col_override = 'green' if override_ini_exists else 'red'
+            
+            if 'worlds_dot_frame' in globals():
+                worlds_dot_frame.configure(fg_color=col_worlds)
+            if 'override_dot_frame' in globals():
+                override_dot_frame.configure(fg_color=col_override)
+                
             for tool in tool_buttons:
                 tool.file_exists = worlds_ini_exists
                 tool.update_indicator()
+                
             if worlds_ini_exists:
-                entry_avatars.config(state='normal')
+                entry_avatars.configure(state='normal')
                 avatar_value_var.set(str(get_avatars_value()))
             else:
-                entry_avatars.config(state='disabled')
+                entry_avatars.configure(state='disabled')
                 avatar_value_var.set("N/A")
 
-        frame_file_management = tk.Frame(frame_tools, bg='black')
-        frame_file_management.pack(pady=5, fill='x', padx=10)
-        btn_new_worlds_ini = tk.Button(frame_file_management, text="NEW WORLDS.INI", font=('Arial', 9, 'bold'), bg='#005A9C', fg='white', activebackground='#003F6E', activeforeground='white', bd=0, command=create_default_worlds_ini)
-        btn_new_worlds_ini.pack(side='left', expand=True, padx=(0,5), ipady=5)
-        btn_new_override_ini = tk.Button(frame_file_management, text="NEW OVERRIDE.INI", font=('Arial', 9, 'bold'), bg='#005A9C', fg='white', activebackground='#003F6E', activeforeground='white', bd=0, command=create_default_override_ini)
-        btn_new_override_ini.pack(side='right', expand=True, padx=(5,0), ipady=5)
+        # File Management Buttons
+        frame_file_management = ctk.CTkFrame(frame_tools, fg_color="transparent")
+        frame_file_management.pack(pady=5, fill='x', padx=5)
+        
+        btn_new_worlds_ini = ctk.CTkButton(frame_file_management, text="NEW WORLDS.INI", font=('Roboto Medium', 9, 'bold'), 
+                                           fg_color='#005A9C', hover_color='#003F6E', 
+                                           command=create_default_worlds_ini)
+        btn_new_worlds_ini.pack(side='left', expand=True, padx=(0,5))
+        
+        btn_new_override_ini = ctk.CTkButton(frame_file_management, text="NEW OVERRIDE.INI", font=('Roboto Medium', 9, 'bold'), 
+                                             fg_color='#005A9C', hover_color='#003F6E', 
+                                             command=create_default_override_ini)
+        btn_new_override_ini.pack(side='right', expand=True, padx=(5,0))
 
-        btn_add_server = tk.Button(frame_tools, text="ADD SERVER", font=('Arial', 9, 'bold'), bg='#006400', fg='white', activebackground='#004d00', activeforeground='white', bd=0, command=lambda: open_add_server_window())
-        btn_add_server.pack(pady=5, ipady=5, fill='x', padx=10)
+        # Add Server & Clean Cache
+        btn_add_server = ctk.CTkButton(frame_tools, text="ADD SERVER", font=('Roboto Medium', 9, 'bold'), 
+                                       fg_color='#006400', hover_color='#004d00', 
+                                       command=lambda: open_add_server_window())
+        btn_add_server.pack(pady=5, fill='x', padx=5)
 
-        btn_clean_cache = tk.Button(frame_tools, text="CLEAN CACHE", font=('Arial', 9, 'bold'), bg='#5A0000', fg='white', activebackground='#8B0000', activeforeground='white', bd=0, command=clean_cache)
-        btn_clean_cache.pack(pady=5, ipady=5, fill='x', padx=10)
+        btn_theme_selector = ctk.CTkButton(frame_tools, text="THEME SELECTOR", font=('Roboto Medium', 9, 'bold'), 
+                                           fg_color='#800080', hover_color='#4B0082', 
+                                           command=lambda: open_theme_selector())
+        btn_theme_selector.pack(pady=5, fill='x', padx=5)
 
-        tool_buttons.append(ToolButton(frame_tools, "MULTIRUN", "multirun", "multirun", worlds_ini_exists))
-        tool_buttons.append(ToolButton(frame_tools, "CHATBOX", "classicchatbox", "classicchatbox", worlds_ini_exists))
-        tool_buttons.append(ToolButton(frame_tools, "SHAPER", "disableshaper", "disableshaper", worlds_ini_exists, default_active=True))
-        tool_buttons.append(ToolButton(frame_tools, "PERMIT ANY AVATARS", "permitanyavatar", "permitAnyAvatar", worlds_ini_exists, font_size=10))
-        tool_buttons.append(ToolButton(frame_tools, "ALLOW OBSCENITIES", "allowobscenities", "allowObscenities", worlds_ini_exists, font_size=10))
+        btn_clean_cache = ctk.CTkButton(frame_tools, text="CLEAN CACHE", font=('Roboto Medium', 9, 'bold'), 
+                                        fg_color='#5A0000', hover_color='#8B0000', 
+                                        command=clean_cache)
+        btn_clean_cache.pack(pady=5, fill='x', padx=5)
 
-        frame_max_players = tk.Frame(frame_tools, bg='black')
-        frame_max_players.pack(pady=5, fill='x', padx=10)
+        # Tool Buttons
+        btn_multirun = ToolButton(frame_tools, "MULTIRUN", "multirun", "multirun", worlds_ini_exists)
+        btn_multirun.pack(pady=5, fill='x', padx=5)
+        tool_buttons.append(btn_multirun)
+
+        btn_chatbox = ToolButton(frame_tools, "CHATBOX", "classicchatbox", "classicchatbox", worlds_ini_exists)
+        btn_chatbox.pack(pady=5, fill='x', padx=5)
+        tool_buttons.append(btn_chatbox)
+
+        btn_shaper = ToolButton(frame_tools, "SHAPER", "disableshaper", "disableshaper", worlds_ini_exists, default_active=True)
+        btn_shaper.pack(pady=5, fill='x', padx=5)
+        tool_buttons.append(btn_shaper)
+
+        btn_avatars = ToolButton(frame_tools, "PERMIT ANY AVATARS", "permitanyavatar", "permitAnyAvatar", worlds_ini_exists, font_size=10)
+        btn_avatars.pack(pady=5, fill='x', padx=5)
+        tool_buttons.append(btn_avatars)
+
+        btn_obscenities = ToolButton(frame_tools, "ALLOW OBSCENITIES", "allowobscenities", "allowObscenities", worlds_ini_exists, font_size=10)
+        btn_obscenities.pack(pady=5, fill='x', padx=5)
+        tool_buttons.append(btn_obscenities)
+
+        # Max Players
+        frame_max_players = ctk.CTkFrame(frame_tools, fg_color="transparent")
+        frame_max_players.pack(pady=10, fill='x', padx=5)
+        
         avatar_value_var = tk.StringVar()
+        
         def on_set_avatars_click():
             if not worlds_ini_exists: return
             try:
@@ -491,17 +534,24 @@ if __name__ == "__main__":
                     messagebox.showerror("Invalid Value", "Please enter a number between 1 and 256.")
             except ValueError:
                 messagebox.showerror("Invalid Input", "Please enter a valid number.")
-        entry_avatars = tk.Entry(frame_max_players, textvariable=avatar_value_var, width=5, font=('Arial', 11))
+                
+        entry_avatars = ctk.CTkEntry(frame_max_players, textvariable=avatar_value_var, width=50, font=('Roboto Medium', 11))
         entry_avatars.pack(side='left', padx=(0, 5))
-        btn_set_avatars = tk.Button(frame_max_players, text="SET MAX PLAYERS", font=('Arial', 10, 'bold'), bg='#333333', fg='white', activebackground='#444444', activeforeground='white', bd=0, command=on_set_avatars_click)
-        btn_set_avatars.pack(side='left', expand=True, fill='x', ipady=8)
+        
+        btn_set_avatars = ctk.CTkButton(frame_max_players, text="SET MAX PLAYERS", font=('Roboto Medium', 10, 'bold'), 
+                                        fg_color='#333333', hover_color='#444444', 
+                                        command=on_set_avatars_click)
+        btn_set_avatars.pack(side='left', expand=True, fill='x')
 
-        selection_frame = tk.Frame(main_container, bg='black')
-        selection_frame.grid(row=0, column=1, sticky='nsew', padx=(20, 0))
+        # Server Selection Section (Right)
+        selection_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+        selection_frame.grid(row=0, column=1, sticky='nsew', padx=(10, 0))
         selection_frame.grid_rowconfigure(0, weight=1)
+        selection_frame.grid_columnconfigure(0, weight=1)
 
-        server_columns_frame = tk.Frame(selection_frame, bg='black')
-        server_columns_frame.pack(fill='both', expand=True)
+        # Container for server lists
+        server_columns_frame = ctk.CTkFrame(selection_frame, fg_color="transparent")
+        server_columns_frame.grid(row=0, column=0, sticky='nsew')
         server_columns_frame.grid_columnconfigure(0, weight=1)
         server_columns_frame.grid_columnconfigure(1, weight=1)
         server_columns_frame.grid_rowconfigure(0, weight=1)
@@ -513,15 +563,17 @@ if __name__ == "__main__":
         detected_server = detect_current_server(SERVER_SELECTION_CONFIG)
         server_option.set(detected_server or next(iter(SERVER_SELECTION_CONFIG)))
 
-        frame_server_selection = ScrollableFrame(server_columns_frame)
-        frame_updating_server = ScrollableFrame(server_columns_frame)
+        # Server List Frames
+        frame_server_selection = ctk.CTkScrollableFrame(server_columns_frame, label_text="Server Selection", label_font=('Roboto Medium', 16, 'bold'))
+        frame_updating_server = ctk.CTkScrollableFrame(server_columns_frame, label_text="Updating Server", label_font=('Roboto Medium', 16, 'bold'))
 
         def refresh_server_lists():
             global SERVER_SELECTION_CONFIG, UPDATING_SERVER_CONFIG
 
-            for widget in frame_server_selection.scrollable_frame.winfo_children():
+            # Clear existing
+            for widget in frame_server_selection.winfo_children():
                 widget.destroy()
-            for widget in frame_updating_server.scrollable_frame.winfo_children():
+            for widget in frame_updating_server.winfo_children():
                 widget.destroy()
 
             new_config = load_full_config()
@@ -529,74 +581,78 @@ if __name__ == "__main__":
                 SERVER_SELECTION_CONFIG = new_config.get("server_selection", {})
                 UPDATING_SERVER_CONFIG = new_config.get("updating_server", {})
 
-                label_server_title = tk.Label(frame_server_selection.scrollable_frame, text="Server Selection", font=('Arial', 16, 'bold'), bg='black', fg='white')
-                label_server_title.pack()
                 for name in SERVER_SELECTION_CONFIG:
-                    tk.Radiobutton(frame_server_selection.scrollable_frame, text=name, variable=server_option, value=name, font=('Arial', 14), bg='black', fg='white', activebackground='black', activeforeground='white', selectcolor='black').pack(anchor='w', pady=3)
+                    ctk.CTkRadioButton(frame_server_selection, text=name, variable=server_option, value=name, font=('Roboto Medium', 14)).pack(anchor='w', pady=3)
 
-                label_updating_title = tk.Label(frame_updating_server.scrollable_frame, text="Updating Server", font=('Arial', 16, 'bold'), bg='black', fg='white')
-                label_updating_title.pack()
                 for name in UPDATING_SERVER_CONFIG:
-                    tk.Radiobutton(frame_updating_server.scrollable_frame, text=name, variable=updating_option, value=name, font=('Arial', 14), bg='black', fg='white', activebackground='black', activeforeground='white', selectcolor='black').pack(anchor='w', pady=3)
+                    ctk.CTkRadioButton(frame_updating_server, text=name, variable=updating_option, value=name, font=('Roboto Medium', 14)).pack(anchor='w', pady=3)
 
         refresh_server_lists()
 
-        action_buttons_frame = tk.Frame(selection_frame, bg='black')
-        action_buttons_frame.pack(side='bottom', fill='x', pady=10)
-        launch_button = tk.Button(action_buttons_frame, text="PLAY", font=('Arial', 15, 'bold'), bg='#333333', fg='white', activebackground='#444444', activeforeground='white', bd=0, command=lambda: apply_changes_and_launch(server_option.get(), updating_option.get(), SERVER_SELECTION_CONFIG, UPDATING_SERVER_CONFIG))
-        launch_button.pack(side='top', expand=True, ipady=8, fill='x', padx=50)
+        # Action Buttons (Play / Advanced / Status)
+        action_buttons_frame = ctk.CTkFrame(selection_frame, fg_color="transparent")
+        action_buttons_frame.grid(row=1, column=0, sticky='ew', pady=10)
+        
+        launch_button = ctk.CTkButton(action_buttons_frame, text="PLAY", font=('Roboto Medium', 15, 'bold'), 
+                                      fg_color='#333333', hover_color='#444444', height=40,
+                                      command=lambda: apply_changes_and_launch(server_option.get(), updating_option.get(), SERVER_SELECTION_CONFIG, UPDATING_SERVER_CONFIG))
+        launch_button.pack(side='top', expand=True, fill='x', padx=50)
 
-        file_indicators_frame = tk.Frame(action_buttons_frame, bg='black')
+        # File Status Indicators
+        file_indicators_frame = ctk.CTkFrame(action_buttons_frame, fg_color="transparent")
         file_indicators_frame.pack(side='top', pady=10)
-        frame_worlds_status = tk.Frame(file_indicators_frame, bg='black')
+        
+        # Worlds.ini status
+        frame_worlds_status = ctk.CTkFrame(file_indicators_frame, fg_color="transparent")
         frame_worlds_status.pack(side='left', padx=10)
-        canvas_worlds = tk.Canvas(frame_worlds_status, width=20, height=15, bg='black', bd=0, highlightthickness=0)
-        canvas_worlds.pack(side='left')
-        worlds_dot = canvas_worlds.create_oval(5, 5, 12, 12, fill='red')
-        label_worlds = tk.Label(frame_worlds_status, text="worlds.ini", font=('Arial', 8), bg='black', fg='gray')
+        worlds_dot_frame = ctk.CTkFrame(frame_worlds_status, width=12, height=12, corner_radius=10, fg_color='red')
+        worlds_dot_frame.pack(side='left', padx=(0,5))
+        label_worlds = ctk.CTkLabel(frame_worlds_status, text="worlds.ini", font=('Roboto Medium', 10), text_color='gray')
         label_worlds.pack(side='left')
-        frame_override_status = tk.Frame(file_indicators_frame, bg='black')
+        
+        # Override.ini status
+        frame_override_status = ctk.CTkFrame(file_indicators_frame, fg_color="transparent")
         frame_override_status.pack(side='left', padx=10)
-        canvas_override = tk.Canvas(frame_override_status, width=20, height=15, bg='black', bd=0, highlightthickness=0)
-        canvas_override.pack(side='left')
-        override_dot = canvas_override.create_oval(5, 5, 12, 12, fill='red')
-        label_override = tk.Label(frame_override_status, text="override.ini", font=('Arial', 8), bg='black', fg='gray')
+        override_dot_frame = ctk.CTkFrame(frame_override_status, width=12, height=12, corner_radius=10, fg_color='red')
+        override_dot_frame.pack(side='left', padx=(0,5))
+        label_override = ctk.CTkLabel(frame_override_status, text="override.ini", font=('Roboto Medium', 10), text_color='gray')
         label_override.pack(side='left')
-
-        def update_file_status_indicators():
-            canvas_worlds.itemconfig(worlds_dot, fill='green' if worlds_ini_exists else 'red')
-            canvas_override.itemconfig(override_dot, fill='green' if override_ini_exists else 'red')
 
         def toggle_advanced_view():
             if advanced_view_active.get():
                 frame_updating_server.grid_forget()
                 frame_server_selection.grid(row=0, column=0, columnspan=2, sticky='nsew')
-                toggle_button.config(text="[ Advanced ]")
+                toggle_button.configure(text="[ Advanced ]")
                 advanced_view_active.set(False)
             else:
                 frame_server_selection.grid(row=0, column=0, columnspan=1, sticky='nsew', padx=5)
                 frame_updating_server.grid(row=0, column=1, columnspan=1, sticky='nsew', padx=5)
-                toggle_button.config(text="[ Basic ]")
+                toggle_button.configure(text="[ Basic ]")
                 advanced_view_active.set(True)
 
-        toggle_button = tk.Button(action_buttons_frame, text="[ Advanced ]", font=('Arial', 9), bg='black', fg='gray', activebackground='black', activeforeground='white', bd=0, command=toggle_advanced_view)
+        toggle_button = ctk.CTkButton(action_buttons_frame, text="[ Advanced ]", font=('Roboto Medium', 9), 
+                                      fg_color='transparent', text_color='gray', hover_color='#1a1a1a', 
+                                      command=toggle_advanced_view)
         toggle_button.pack(side='bottom', pady=5)
 
+        # Initial layout state
         frame_server_selection.grid(row=0, column=0, columnspan=2, sticky='nsew')
 
+        # Add Server Dialog
+        def open_theme_selector():
+             ThemeSelectorWindow(window)
+
         def open_add_server_window():
-            add_window = tk.Toplevel(window)
+            add_window = ctk.CTkToplevel(window)
             add_window.title("Add New Server")
-            add_window.geometry("600x250")
-            add_window.config(bg="#222222")
+            add_window.geometry("600x350")
             add_window.resizable(False, False)
             add_window.transient(window)
             add_window.grab_set()
-            try:
-                add_icon_path = resource_path(ICON_NAME)
-                add_window.iconbitmap(add_icon_path)
-            except Exception:
-                pass
+            
+            # Force icon to appear by scheduling it slightly after window creation
+            add_window.after(200, lambda: add_window.iconbitmap(resource_path(ICON_NAME)))
+                
             entries = {}
             def get_placeholders():
                 lw_server = SERVER_SELECTION_CONFIG.get("LibreWorlds", {})
@@ -609,37 +665,49 @@ if __name__ == "__main__":
                     "ScriptServer (Optional)": lw_updating.get("script_server", "scriptServer=http://example.com/scripts")
                 }
             placeholders = get_placeholders()
+            
+            form_frame = ctk.CTkFrame(add_window, fg_color="transparent")
+            form_frame.pack(fill='both', expand=True, padx=20, pady=20)
+            
             for label_text, placeholder in placeholders.items():
-                frame = tk.Frame(add_window, bg='#222222')
-                frame.pack(fill='x', padx=15, pady=5)
-                label = tk.Label(frame, text=label_text + ":", bg='#222222', fg='white', width=22, anchor='w')
+                row_frame = ctk.CTkFrame(form_frame, fg_color="transparent")
+                row_frame.pack(fill='x', pady=5)
+                
+                label = ctk.CTkLabel(row_frame, text=label_text + ":", width=180, anchor='w')
                 label.pack(side='left')
-                entry = tk.Entry(frame, width=50)
+                
+                entry = ctk.CTkEntry(row_frame, width=300)
                 entry.pack(side='left', expand=True, fill='x')
                 entry.insert(0, placeholder)
-                entry.config(fg='grey')
-                def on_focus_in(event, p=placeholder):
-                    if event.widget.get() == p:
-                        event.widget.delete(0, "end")
-                        event.widget.config(fg='black')
-                def on_focus_out(event, p=placeholder):
-                    if not event.widget.get():
-                        event.widget.insert(0, p)
-                        event.widget.config(fg='grey')
+                entry.configure(text_color='gray')
+                
+                def on_focus_in(event, p=placeholder, w=entry):
+                    if w.get() == p:
+                        w.delete(0, "end")
+                        w.configure(text_color=ctk.ThemeManager.theme["CTkLabel"]["text_color"])
+                def on_focus_out(event, p=placeholder, w=entry):
+                    if not w.get():
+                        w.insert(0, p)
+                        w.configure(text_color='gray')
+                        
                 entry.bind("<FocusIn>", on_focus_in)
                 entry.bind("<FocusOut>", on_focus_out)
                 entries[label_text] = entry
+                
             def save_new_server():
                 server_name = entries["Server Name"].get().strip()
                 address = entries["Address Line"].get().strip()
                 world_server = entries["WorldServer Line"].get().strip()
                 upgrade_server = entries["UpgradeServer (Optional)"].get().strip()
                 script_server = entries["ScriptServer (Optional)"].get().strip()
+                
                 if server_name in [placeholders["Server Name"], ""] or address in [placeholders["Address Line"], ""] or world_server in [placeholders["WorldServer Line"], ""]:
                     messagebox.showerror("Error", "Server Name, Address, and WorldServer fields are mandatory.", parent=add_window)
                     return
+                    
                 config = load_full_config()
                 if not config: return
+                
                 config["server_selection"][server_name] = {"address": address, "world_server": world_server}
                 updating_data = {}
                 if upgrade_server not in [placeholders["UpgradeServer (Optional)"], ""]:
@@ -650,7 +718,9 @@ if __name__ == "__main__":
                     updating_data["script_server"] = script_server
                 else:
                     updating_data["script_server"] = None
+                    
                 config["updating_server"][server_name] = updating_data
+                
                 try:
                     server_config_path = os.path.join(application_path, SERVER_CONFIG_FILE)
                     with open(server_config_path, 'w') as f:
@@ -660,13 +730,15 @@ if __name__ == "__main__":
                     refresh_server_lists()
                 except Exception as e:
                     messagebox.showerror("Error", f"Could not save configuration file.\n{e}", parent=add_window)
-            button_frame = tk.Frame(add_window, bg='#222222')
+
+            button_frame = ctk.CTkFrame(add_window, fg_color="transparent")
             button_frame.pack(pady=10)
-            save_button = tk.Button(button_frame, text="Save Server", command=save_new_server, bg='#005A9C', fg='white')
+            
+            save_button = ctk.CTkButton(button_frame, text="Save Server", command=save_new_server)
             save_button.pack(side='left', padx=10)
-            cancel_button = tk.Button(button_frame, text="Cancel", command=add_window.destroy)
+            
+            cancel_button = ctk.CTkButton(button_frame, text="Cancel", command=add_window.destroy, fg_color="transparent", border_width=1)
             cancel_button.pack(side='left', padx=10)
 
         refresh_all_indicators()
-
         window.mainloop()
