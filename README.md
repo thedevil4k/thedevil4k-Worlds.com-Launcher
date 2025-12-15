@@ -103,5 +103,3 @@ pyinstaller --noconfirm --onefile --windowed --icon="worldsserverselection.ico" 
 
 This project is licensed under the GPLv3 License. You can fork and improve that.
 
-* **Project Direction & Design**: thedevil4k
-* **Code Generation & Engineering**: Gemini
